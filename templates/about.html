@@ -1,0 +1,244 @@
+<!-- templates/about.html -->
+{% extends "base.html" %}
+
+{% block title %}关于我 - 个人博客{% endblock %}
+
+{% block left_content %}
+<div class="about-container">
+    <h1 class="page-title">关于我</h1>
+    
+    <div class="about-content">
+        <div class="about-intro">
+            <div class="about-avatar">
+                <!-- 这里可以放头像，暂时用占位符 -->
+                <div class="avatar-placeholder">
+                    <svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="60" cy="60" r="60" fill="#f0f0f0"/>
+                        <circle cx="60" cy="45" r="20" fill="#ccc"/>
+                        <path d="M30 90 Q60 110 90 90" stroke="#ccc" stroke-width="3" fill="none"/>
+                        <path d="M40 80 Q60 90 80 80" stroke="#ccc" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="about-text">
+                <h2>你好，我是博客作者</h2>
+                <p>欢迎来到我的个人博客！</p>
+                <p>这个博客使用Django构建，主要由AI完成</p>
+            </div>
+        </div>
+        
+        <div class="about-sections">
+            <section class="about-section">
+                <h3><i class="section-icon">📚</i> 这里应该写我的经历</h3>
+                <p>然而，经历没什么好写的</p>
+            </section>
+            
+            <section class="about-section">
+                <h3><i class="section-icon">💻</i>简单用过的语言</h3>
+                <div class="skills">
+                    <span class="skill-tag">Python</span>
+                    <span class="skill-tag">C</span>
+                    <span class="skill-tag">x86-asm</span>
+                </div>
+            </section>
+            
+            <section class="about-section">
+                <h3><i class="section-icon">✍️</i> 写作方向</h3>
+                <ul>
+                    <li><strong>学习笔记：</strong>听课得到的东西</li>
+                    <li><strong>项目实践：</strong>记录个人项目开发过程和遇到的问题</li>
+                    <li><strong>读书笔记：</strong>看了书，胡乱写些东西</li>
+                </ul>
+            </section>
+            
+            <section class="about-section">
+                <h3><i class="section-icon">📫</i> 联系我</h3>
+                <div class="contact-info">
+                    <p>如果你对我的文章有任何想法或建议，或者想讨论技术问题，欢迎通过以下方式联系我：</p>
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <span class="contact-icon">📧</span>
+                            <span>邮箱：blogauthor@example.com</span>
+                        </div>
+                        <div class="contact-method">
+                            <span class="contact-icon">🐙</span>
+                            <span>GitHub：<a href="https://github.com/Jerry-debug-stack" target="_blank">github.com/Jerry-debug-stack</a></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div class="about-footer">
+            <p>感谢访问我的博客，希望你能在这里找到有价值的内容。我会持续更新文章。</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 关于页面特有样式 */
+    .about-container {
+        max-width: 100%;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .about-intro {
+        display: flex;
+        align-items: center;
+        margin-bottom: 3rem;
+        flex-wrap: wrap;
+    }
+    
+    .about-avatar {
+        flex: 0 0 auto;
+        margin-right: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .avatar-placeholder {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        overflow: hidden;
+        background-color: #f8f9fa;
+        border: 3px solid #e9ecef;
+    }
+    
+    .about-text {
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .about-text h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #444;
+    }
+    
+    .about-text p {
+        margin-bottom: 1rem;
+        line-height: 1.7;
+        color: #555;
+    }
+    
+    .about-sections {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .about-section {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        padding: 1.5rem;
+        border-left: 4px solid #007bff;
+    }
+    
+    .about-section h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        color: #333;
+        display: flex;
+        align-items: center;
+    }
+    
+    .section-icon {
+        margin-right: 0.5rem;
+        font-size: 1.3rem;
+    }
+    
+    .about-section p, .about-section li {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 0.8rem;
+    }
+    
+    .about-section ul {
+        padding-left: 1.5rem;
+    }
+    
+    .about-section li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .skills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .skill-tag {
+        display: inline-block;
+        background-color: #e3f2fd;
+        color: #1565c0;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .contact-info p {
+        margin-bottom: 1.2rem;
+    }
+    
+    .contact-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+    
+    .contact-method {
+        display: flex;
+        align-items: center;
+    }
+    
+    .contact-icon {
+        margin-right: 0.8rem;
+        font-size: 1.2rem;
+    }
+    
+    .about-footer {
+        background-color: #f0f7ff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        text-align: center;
+        border: 1px solid #d1e7ff;
+    }
+    
+    .about-footer p {
+        color: #444;
+        font-style: italic;
+        margin: 0;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+        .about-intro {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .about-avatar {
+            margin-right: 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .about-sections {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

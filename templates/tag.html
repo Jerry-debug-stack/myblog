@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tag.name }} - 个人博客{% endblock %}
+
+{% block left_content %}
+<!-- 标签标题 -->
+<div class="tag-header" style="margin-bottom: 2rem;">
+    <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">
+        <span style="color: #6c757d;">标签:</span> {{ tag.name }}
+    </h1>
+    <p class="article-meta">
+        {% if articles_count %}
+        共有 {{ articles_count }} 篇文章
+        {% else %}
+        暂无文章
+        {% endif %}
+    </p>
+</div>
+
+<!-- 文章列表 -->
+{% if articles %}
+    {% for article in articles %}
+    <div class="article-card">
+        <h2 class="article-title">
+            <a href="/article/{{ article.slug }}/">{{ article.title }}</a>
+        </h2>
+        
+        <div class="article-meta">
+            <span>{{ article.publish_date|date:"Y年m月d日" }}</span>
+            <span style="margin: 0 10px;">•</span>
+        </div>
+        
+        <div class="article-excerpt">
+            {{ article.excerpt|default:article.content|truncatechars:200|safe }}
+        </div>
+        
+        <div class="article-tags" style="margin-top: 1rem;">
+            {% for tag in article.tags.all %}
+            <a href="/tag/{{ tag.slug }}/" class="tag">{{ tag.name }}</a>
+            {% endfor %}
+        </div>
+        
+        <div style="margin-top: 1rem;">
+            <a href="/article/{{ article.slug }}/" class="read-more" 
+               style="color: #007bff; font-weight: 500; font-size: 0.95rem;">
+                继续阅读 →
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <!-- 分页 -->
+    {% if articles.paginator.num_pages > 1 %}
+    <div class="pagination" style="margin-top: 2rem; text-align: center;">
+        {% if articles.has_previous %}
+            <a href="?page={{ articles.previous_page_number }}" class="page-link" 
+               style="display: inline-block; padding: 0.5rem 1rem; margin-right: 0.5rem; 
+                      background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px;">
+                上一页
+            </a>
+        {% endif %}
+        
+        <span style="padding: 0.5rem 1rem; margin: 0 0.5rem;">
+            第 {{ articles.number }} 页 / 共 {{ articles.paginator.num_pages }} 页
+        </span>
+        
+        {% if articles.has_next %}
+            <a href="?page={{ articles.next_page_number }}" class="page-link"
+               style="display: inline-block; padding: 0.5rem 1rem; margin-left: 0.5rem;
+                      background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px;">
+                下一页
+            </a>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+{% else %}
+    <div class="no-articles" style="text-align: center; padding: 3rem 0;">
+        <p style="font-size: 1.2rem; color: #6c757d; margin-bottom: 1rem;">
+            此标签下暂无文章
+        </p>
+        <a href="/" style="display: inline-block; padding: 0.5rem 1.5rem; 
+                          background-color: #007bff; color: white; border-radius: 4px;">
+            返回首页
+        </a>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 标签页面特有样式 */
+    .tag-header {
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .page-link:hover {
+        background-color: #007bff !important;
+        color: white !important;
+        text-decoration: none;
+    }
+    
+    .read-more:hover {
+        text-decoration: underline;
+    }
+    
+    /* 标签高亮 */
+    .tag {
+        transition: all 0.2s;
+    }
+    
+    .tag:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,.1);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 高亮当前标签
+        const currentTagSlug = "{{ tag.slug }}";
+        const tags = document.querySelectorAll('.tag-cloud .tag');
+        
+        tags.forEach(tag => {
+            const href = tag.getAttribute('href');
+            if (href.includes(currentTagSlug)) {
+                tag.style.backgroundColor = '#007bff';
+                tag.style.color = 'white';
+            }
+        });
+        
+        // 平滑滚动到顶部
+        const pageLinks = document.querySelectorAll('.page-link');
+        pageLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (this.getAttribute('href').startsWith('?')) {
+                    e.preventDefault();
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                    setTimeout(() => {
+                        window.location.href = this.getAttribute('href');
+                    }, 300);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

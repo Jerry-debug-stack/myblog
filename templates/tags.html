@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+
+{% block title %}分类 - 个人博客{% endblock %}
+
+{% block left_content %}
+<div class="tags-page">
+    <!-- 页面标题和描述 -->
+    <div class="page-header">
+        <h1 class="page-title">博客分类</h1>
+        <p class="page-description">
+            当前共有 <span class="tag-count">{{ tags|length }}</span> 个分类，
+            共包含 <span class="article-count">{{ total_articles }}</span> 篇文章
+        </p>
+    </div>
+
+    <!-- 标签显示模式切换 -->
+    <div class="view-toggle">
+        <button class="view-btn active" data-view="cloud">
+            <i class="toggle-icon">☁️</i> 标签云
+        </button>
+        <button class="view-btn" data-view="list">
+            <i class="toggle-icon">📋</i> 列表视图
+        </button>
+    </div>
+
+    <!-- 标签云视图 -->
+    <div class="tag-cloud-view active" id="cloudView">
+        <div class="cloud-container">
+            {% for tag in tags %}
+            <a href="/tag/{{ tag.slug }}/" 
+               class="tag-cloud-item" 
+               style="font-size: {{ tag.font_size }}px; color: {{ tag.color }}; background-color: {{ tag.bg_color }};"
+               data-count="{{ tag.article_count }}">
+                {{ tag.name }}
+                <span class="tag-count-badge">{{ tag.article_count }}</span>
+            </a>
+            {% empty %}
+            <div class="empty-state">
+                <p>暂无分类标签，快去创建一些文章吧！</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- 列表视图 -->
+    <div class="tag-list-view" id="listView">
+        <div class="list-container">
+            {% for tag in tags %}
+            <div class="tag-list-item">
+                <div class="tag-info">
+                    <a href="/tag/{{ tag.slug }}/" class="tag-name">{{ tag.name }}</a>
+                    <p class="tag-description">{{ tag.description|default:"暂无描述" }}</p>
+                </div>
+                <div class="tag-stats">
+                    <span class="article-count">{{ tag.article_count }} 篇文章</span>
+                    <span class="latest-article">最近更新: {{ tag.latest_update|date:"Y-m-d"|default:"暂无" }}</span>
+                </div>
+                <a href="/tag/{{ tag.slug }}/" class="view-tag-btn">查看</a>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>暂无分类标签，快去创建一些文章吧！</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<style>
+    /* 分类页面特定样式 */
+    .tags-page {
+        padding: 0.5rem;
+    }
+    
+    .page-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .page-description {
+        color: #666;
+        font-size: 1rem;
+    }
+    
+    .tag-count, .article-count {
+        font-weight: bold;
+        color: #007bff;
+    }
+    
+    /* 视图切换按钮 */
+    .view-toggle {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .view-btn {
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .view-btn:hover {
+        background-color: #e9ecef;
+    }
+    
+    .view-btn.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+    
+    .toggle-icon {
+        font-style: normal;
+    }
+    
+    /* 标签云视图 */
+    .tag-cloud-view {
+        min-height: 300px;
+        margin-bottom: 3rem;
+    }
+    
+    .tag-cloud-view.active {
+        display: block;
+    }
+    
+    .tag-cloud-view:not(.active) {
+        display: none;
+    }
+    
+    .cloud-container {
+        text-align: center;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        min-height: 400px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .tag-cloud-item {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        margin: 0.3rem;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        position: relative;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .tag-cloud-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .tag-count-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: #ff6b6b;
+        color: white;
+        font-size: 0.7rem;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* 列表视图 */
+    .tag-list-view {
+        min-height: 300px;
+        margin-bottom: 3rem;
+    }
+    
+    .tag-list-view.active {
+        display: block;
+    }
+    
+    .tag-list-view:not(.active) {
+        display: none;
+    }
+    
+    .list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .tag-list-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        transition: opacity 0.3s ease;;
+        border-left: 4px solid #007bff;
+    }
+    
+    .tag-list-item:hover {
+        opacity: 1;
+    }
+    
+    .tag-info {
+        flex: 1;
+    }
+    
+    .tag-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: block;
+        transition: color 0.3s ease;
+    }
+
+    .tag-name:hover {
+        color: #007bff;
+    }
+    
+    .tag-description {
+        color: #666;
+        font-size: 0.95rem;
+        margin: 0;
+    }
+    
+    .tag-stats {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        margin-right: 1.5rem;
+    }
+    
+    .article-count {
+        font-weight: 600;
+        color: #007bff;
+        margin-bottom: 0.3rem;
+    }
+    
+    .latest-article {
+        color: #888;
+        font-size: 0.85rem;
+    }
+    
+    .view-tag-btn {
+        padding: 0.5rem 1rem;
+        background-color: #007bff;
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+    
+    .view-tag-btn:hover {
+        background-color: #0056b3;
+        color: white;
+    }
+    
+    /* 空状态 */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #666;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        width: 100%;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+        .tag-list-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .tag-stats {
+            align-items: flex-start;
+            margin-right: 0;
+        }
+        
+        .view-tag-btn {
+            align-self: flex-end;
+        }
+        
+        .cloud-container {
+            padding: 1rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .view-toggle {
+            flex-direction: column;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 视图切换功能
+        const viewButtons = document.querySelectorAll('.view-btn');
+        const cloudView = document.getElementById('cloudView');
+        const listView = document.getElementById('listView');
+        
+        viewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 更新按钮状态
+                viewButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 显示对应的视图
+                const viewType = this.getAttribute('data-view');
+                
+                if (viewType === 'cloud') {
+                    cloudView.classList.add('active');
+                    listView.classList.remove('active');
+                } else {
+                    cloudView.classList.remove('active');
+                    listView.classList.add('active');
+                }
+                
+                // 保存用户偏好到本地存储
+                localStorage.setItem('tagViewPreference', viewType);
+            });
+        });
+        
+        // 加载用户保存的视图偏好
+        const savedView = localStorage.getItem('tagViewPreference');
+        if (savedView === 'list') {
+            document.querySelector('[data-view="list"]').click();
+        }
+        
+        // 为标签云项目添加悬停效果
+        const tagCloudItems = document.querySelectorAll('.tag-cloud-item');
+        tagCloudItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.05)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+        
+        // 为标签列表项添加点击效果
+        const tagListItems = document.querySelectorAll('.tag-list-item');
+        tagListItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                // 如果点击的不是按钮或链接，则跳转到标签页面
+                if (!e.target.closest('a')) {
+                    const link = this.querySelector('.tag-name');
+                    if (link) {
+                        window.location.href = link.getAttribute('href');
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

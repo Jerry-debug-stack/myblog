@@ -1,0 +1,504 @@
+{% extends "base.html" %}
+{% load get_item %}
+
+{% block title %}归档 - 我的博客{% endblock %}
+
+{% block left_content %}
+<div class="archive-page">
+    <h1 class="page-title">归档</h1>
+    <p class="page-description">这里收录了博客的所有文章，按发布时间排序。</p>
+    
+    {% if archive_data %}
+        <div class="archive-list">
+            {% for year, months in archive_data.items %}
+            <div class="archive-year">
+                <h2>
+                    {{ year }}年
+                    <span class="year-count">(共{{ year_total_counts|get_item:year }}篇文章)</span>
+                </h2>
+                
+                {% for month, articles in months.items %}
+                <div class="archive-month">
+                    <h3>
+                        <span>{{ month }}月</span>
+                        <span class="month-count">{{ articles|length }}篇文章</span>
+                    </h3>
+                    
+                    <div class="article-list">
+                        {% for article in articles %}
+                        <div class="archive-article-item" onclick="window.location.href='/article/{{ article.slug }}/'">
+                            <div class="article-header">
+                                <h4>
+                                    <a href="/article/{{ article.slug }}/">{{ article.title }}</a>
+                                </h4>
+                                <span class="article-date">{{ article.pub_date|date:"m-d" }}</span>
+                            </div>
+                            
+                            {% if article.excerpt %}
+                            <p class="article-excerpt">{{ article.excerpt|truncatechars:120 }}</p>
+                            {% endif %}
+                            
+                            <div class="article-meta">
+                                {% if article.categories.all %}
+                                <div class="article-tags">
+                                    {% for tag in article.categories.all %}
+                                    <a href="/tag/{{ tag.slug }}/" class="tag">{{ tag.name }}</a>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-archive">
+            <div class="empty-archive-icon">📂</div>
+            <h3>暂无归档内容</h3>
+            <p>还没有发布任何文章</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block right_content %}
+<!-- 可以添加额外的右侧内容 -->
+<div class="sidebar-module">
+    <h3 class="sidebar-title">按年份浏览</h3>
+    <div class="year-list">
+        {% for year, count in year_counts.items %}
+        <a href="#year-{{ year }}" class="year-link">{{ year }}年 ({{ count }})</a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="sidebar-module">
+    <h3 class="sidebar-title">统计信息</h3>
+    <ul style="list-style: none; padding: 0;">
+        <li class="stat-item">
+            <span class="stat-label">文章总数:</span>
+            <span class="stat-value">{{ total_articles }}</span>
+        </li>
+        <li class="stat-item">
+            <span class="stat-label">分类数量:</span>
+            <span class="stat-value">{{ total_tags }}</span>
+        </li>
+        <li class="stat-item">
+            <span class="stat-label">最早文章:</span>
+            <span class="stat-value">{{ oldest_article_date|date:"Y-m-d" }}</span>
+        </li>
+    </ul>
+</div>
+<style>
+    /* 归档页面特定样式 */
+    .archive-page {
+        padding: 0.5rem;
+    }
+    
+    .archive-list {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        padding: 2rem;
+    }
+    
+    .archive-year {
+        margin-bottom: 2.5rem;
+    }
+    
+    .archive-year h2 {
+        font-size: 1.8rem;
+        color: #333;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .year-count {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-left: 1rem;
+    }
+    
+    .archive-month {
+        margin-bottom: 2rem;
+    }
+    
+    .archive-month h3 {
+        font-size: 1.4rem;
+        color: #495057;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .month-count {
+        font-size: 1rem;
+        color: #6c757d;
+    }
+    
+    .article-list {
+        border-left: 3px solid #f0f0f0;
+        padding-left: 1.5rem;
+    }
+    
+    /* 文章条目样式 - 与分类界面保持一致 */
+    .archive-article-item {
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        transition: opacity 0.3s ease;
+        border-left: 4px solid #007bff;
+        position: relative;
+        cursor: pointer;
+        opacity: 0.95;
+    }
+    
+    .archive-article-item:hover {
+        opacity: 1;
+    }
+    
+    .archive-article-item:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+    }
+    
+    .article-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.8rem;
+    }
+    
+    .article-header h4 {
+        font-size: 1.2rem;
+        margin: 0;
+        flex: 1;
+    }
+    
+    .article-header h4 a {
+        color: #333;
+        text-decoration: none;
+        display: block;
+        transition: color 0.3s ease;
+    }
+    
+    .archive-article-item:hover .article-header h4 a {
+        color: #007bff;
+    }
+    
+    .article-date {
+        color: #6c757d;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        margin-left: 1rem;
+    }
+    
+    .article-excerpt {
+        color: #666;
+        margin-bottom: 0.8rem;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    .article-meta {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+    
+    .article-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    /* 标签样式 - 与分类界面保持一致 */
+    .tag {
+        display: inline-block;
+        background-color: #e9ecef;
+        color: #495057;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+    
+    .tag:hover {
+        background-color: #007bff;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,123,255,0.2);
+    }
+    
+    /* 空状态样式 */
+    .empty-archive {
+        text-align: center;
+        padding: 4rem 0;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+    
+    .empty-archive-icon {
+        font-size: 5rem;
+        color: #e9ecef;
+        margin-bottom: 1rem;
+        display: block;
+    }
+    
+    .empty-archive h3 {
+        color: #6c757d;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+    
+    .empty-archive p {
+        color: #adb5bd;
+        font-size: 1rem;
+    }
+    
+    /* 年份导航样式 */
+    .year-nav {
+        position: sticky;
+        top: 100px;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        margin-bottom: 2rem;
+    }
+    
+    .year-nav h3 {
+        margin-bottom: 1rem;
+        color: #333;
+        font-size: 1.2rem;
+    }
+    
+    .year-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .year-link {
+        display: block;
+        padding: 0.5rem 1rem;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        color: #495057;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+    
+    .year-link:hover,
+    .year-link.active {
+        background-color: #007bff;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,123,255,0.2);
+    }
+    
+    /* 统计信息样式 */
+    .stat-item {
+        margin-bottom: 0.8rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .stat-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    
+    .stat-label {
+        color: #666;
+    }
+    
+    .stat-value {
+        font-weight: 600;
+        color: #007bff;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+        .archive-list {
+            padding: 1.5rem;
+        }
+        
+        .archive-year h2 {
+            font-size: 1.5rem;
+        }
+        
+        .archive-month h3 {
+            font-size: 1.2rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .article-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .article-date {
+            margin-left: 0;
+        }
+        
+        .article-list {
+            padding-left: 1rem;
+        }
+        
+        .archive-article-item {
+            padding: 1.2rem;
+        }
+        
+        .year-nav {
+            position: static;
+            margin-bottom: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .archive-list {
+            padding: 1rem;
+        }
+        
+        .archive-article-item {
+            padding: 1rem;
+        }
+        
+        .article-header h4 {
+            font-size: 1.1rem;
+        }
+        
+        .article-tags {
+            gap: 0.3rem;
+        }
+        
+        .tag {
+            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 添加文章条目点击效果
+    document.addEventListener('DOMContentLoaded', function() {
+        const articleItems = document.querySelectorAll('.archive-article-item');
+        
+        articleItems.forEach(item => {
+            // 添加键盘支持
+            item.setAttribute('tabindex', '0');
+            
+            item.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const link = this.querySelector('h4 a');
+                    if (link) {
+                        window.location.href = link.href;
+                    }
+                }
+            });
+            
+            // 点击文章条目时跳转到文章详情
+            item.addEventListener('click', function(e) {
+                // 如果点击的是标签链接，不阻止默认行为
+                if (e.target.tagName === 'A' || e.target.closest('a')) {
+                    return;
+                }
+                
+                const link = this.querySelector('h4 a');
+                if (link) {
+                    window.location.href = link.href;
+                }
+            });
+        });
+        
+        // 平滑滚动到指定年份
+        const yearLinks = document.querySelectorAll('.year-link');
+        let isScrolling = false;
+        
+        // 为每个年份元素添加ID
+        document.querySelectorAll('.archive-year').forEach(element => {
+            const year = element.querySelector('h2').textContent.match(/\d+/)[0];
+            element.id = `year-${year}`;
+        });
+        
+        // 点击年份链接平滑滚动
+        yearLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                if (targetElement) {
+                    isScrolling = true;
+                    
+                    yearLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    setTimeout(() => {
+                        isScrolling = false;
+                    }, 800);
+                }
+            });
+        });
+        
+        // 监听滚动，更新当前激活的年份
+        let scrollTimeout;
+        window.addEventListener('scroll', function() {
+            if (isScrolling) return;
+            
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const scrollPosition = window.scrollY + 150;
+                const yearElements = document.querySelectorAll('.archive-year');
+                let currentYearId = '';
+                
+                yearElements.forEach(element => {
+                    const elementTop = element.offsetTop;
+                    const elementHeight = element.clientHeight;
+                    
+                    if (scrollPosition >= elementTop && scrollPosition < elementTop + elementHeight) {
+                        currentYearId = element.id;
+                    }
+                });
+                
+                // 更新活跃的年份链接
+                if (currentYearId) {
+                    yearLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${currentYearId}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            }, 100);
+        });
+    });
+</script>
+{% endblock %}

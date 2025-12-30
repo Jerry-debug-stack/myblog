@@ -1,0 +1,130 @@
+<!-- 创建一个名为 404.html 的文件 -->
+{% extends "base.html" %}
+
+{% block title %}页面未找到 - 个人博客{% endblock %}
+
+{% block left_content %}
+<div class="error-page">
+    <!-- 404错误图标/插图 -->
+    <div class="error-illustration">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 300" style="max-width: 400px; margin: 0 auto 2rem; display: block;">
+            <rect x="100" y="50" width="300" height="200" rx="10" ry="10" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2"/>
+            <line x1="150" y1="80" x2="350" y2="80" stroke="#adb5bd" stroke-width="2" stroke-linecap="round"/>
+            <line x1="150" y1="100" x2="320" y2="100" stroke="#e9ecef" stroke-width="8" stroke-linecap="round"/>
+            <line x1="150" y1="110" x2="280" y2="110" stroke="#e9ecef" stroke-width="8" stroke-linecap="round"/>
+            <line x1="150" y1="120" x2="250" y2="120" stroke="#e9ecef" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="170" cy="170" r="15" fill="#e9ecef"/>
+            <circle cx="230" cy="170" r="15" fill="#e9ecef"/>
+            <path d="M170,200 Q200,220 230,200" stroke="#adb5bd" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <rect x="300" y="150" width="70" height="70" rx="5" ry="5" fill="#6c757d"/>
+            <text x="335" y="190" text-anchor="middle" fill="white" font-family="Arial" font-size="40" font-weight="bold">404</text>
+            <path d="M130,270 Q250,310 370,270" stroke="#007bff" stroke-width="3" fill="none" stroke-dasharray="5,5"/>
+            <circle cx="130" cy="270" r="8" fill="#007bff"/>
+            <circle cx="370" cy="270" r="8" fill="#007bff"/>
+        </svg>
+    </div>
+    
+    <!-- 错误代码和消息 -->
+    <div class="error-content" style="text-align: center; padding: 2rem;">
+        <h1 style="font-size: 4rem; color: #6c757d; margin-bottom: 1rem;">404</h1>
+        <h2 style="font-size: 2rem; color: #343a40; margin-bottom: 1.5rem;">页面未找到</h2>
+        
+        <p style="color: #6c757d; font-size: 1.1rem; max-width: 600px; margin: 0 auto 2rem; line-height: 1.7;">
+            抱歉，您访问的页面不存在或已被移除。<br>
+            这可能是因为链接已失效，或者您输入的网址有误。
+        </p>
+        
+        <!-- 操作按钮 -->
+        <div class="error-actions" style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+            <a href="/" class="error-btn" style="display: inline-block; padding: 0.75rem 1.5rem; background-color: #007bff; color: white; border-radius: 50px; font-weight: 500; transition: all 0.3s;">
+                返回首页
+            </a>
+            <a href="javascript:history.back()" class="error-btn" style="display: inline-block; padding: 0.75rem 1.5rem; background-color: #6c757d; color: white; border-radius: 50px; font-weight: 500; transition: all 0.3s;">
+                返回上一页
+            </a>
+            <button onclick="window.location.reload()" class="error-btn" style="display: inline-block; padding: 0.75rem 1.5rem; background-color: #e9ecef; color: #495057; border: none; border-radius: 50px; font-weight: 500; cursor: pointer; transition: all 0.3s;">
+                刷新页面
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,.1);
+    }
+    
+    .error-btn:first-child:hover {
+        background-color: #0056b3;
+    }
+    
+    .error-btn:nth-child(2):hover {
+        background-color: #545b62;
+    }
+    
+    .error-btn:nth-child(3):hover {
+        background-color: #dae0e5;
+    }
+    
+    @media (max-width: 768px) {
+        .error-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .error-btn {
+            width: 100%;
+            max-width: 250px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .popular-articles .article-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    function performErrorSearch() {
+        const searchInput = document.getElementById('error-search');
+        const query = searchInput.value.trim();
+        if (query) {
+            window.location.href = '/search/?q=' + encodeURIComponent(query);
+        } else {
+            searchInput.focus();
+            searchInput.style.borderColor = '#dc3545';
+            setTimeout(() => {
+                searchInput.style.borderColor = '#ddd';
+            }, 1000);
+        }
+    }
+    
+    // 为错误页面的搜索框添加回车键支持
+    document.addEventListener('DOMContentLoaded', function() {
+        const errorSearchInput = document.getElementById('error-search');
+        if (errorSearchInput) {
+            errorSearchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performErrorSearch();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+{% block right_content %}
+<!-- 右侧边栏可以保持不变，或者根据需要在404页面中隐藏某些模块 -->
+<div class="sidebar-module">
+    <h3 class="sidebar-title">需要帮助？</h3>
+    <ul style="list-style: none; padding-left: 0;">
+        <li style="margin-bottom: 0.8rem;">
+            <a href="/about/#contact" style="display: flex; align-items: center; color: #495057;">
+                <span style="display: inline-block; width: 24px; height: 24px; background-color: #007bff; color: white; border-radius: 50%; text-align: center; line-height: 24px; margin-right: 10px;">!</span>
+                联系管理员
+            </a>
+        </li>
+    </ul>
+</div>
+{% endblock %}

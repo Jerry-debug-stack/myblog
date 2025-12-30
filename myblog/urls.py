@@ -16,7 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from blog import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("",views.index_view),
+    path('article/<slug:slug>/', views.article_detail, name='article_detail'),
+    path('archive/', views.archive_view, name='archive'),
+    path('tags/',views.tags_view,name='tags'),
+    path('tag/<slug:slug>/',views.tag_detail_view, name='tag_detail'),
+    path('about/',views.about_view),
+    path("404",views.fault_view),
 ]
+
+handler404 = views.fault_view

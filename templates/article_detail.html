@@ -1,0 +1,388 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article_title }} - 个人博客{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* 文章详情页特定样式 */
+    .article-header {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .article-title {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+    
+    .article-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .article-meta-item {
+        display: flex;
+        align-items: center;
+    }
+    
+    .article-meta-item i {
+        margin-right: 0.3rem;
+    }
+    
+    .article-tags {
+        margin-top: 1rem;
+    }
+    
+    /* 文章内容样式 */
+    .article-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #444;
+    }
+    
+    /* Markdown内容样式 */
+    .article-content h1,
+    .article-content h2,
+    .article-content h3,
+    .article-content h4,
+    .article-content h5,
+    .article-content h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        line-height: 1.25;
+        color: #333;
+    }
+    
+    .article-content h1 { font-size: 1.8rem; }
+    .article-content h2 { font-size: 1.6rem; }
+    .article-content h3 { font-size: 1.4rem; }
+    .article-content h4 { font-size: 1.2rem; }
+    .article-content h5 { font-size: 1.1rem; }
+    .article-content h6 { font-size: 1rem; color: #6c757d; }
+    
+    .article-content p {
+        margin-bottom: 1.2rem;
+    }
+    
+    .article-content a {
+        color: #007bff;
+        text-decoration: none;
+    }
+    
+    .article-content a:hover {
+        text-decoration: underline;
+    }
+    
+    .article-content ul,
+    .article-content ol {
+        margin-bottom: 1.2rem;
+        padding-left: 2rem;
+    }
+    
+    .article-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .article-content blockquote {
+        margin: 1.5rem 0;
+        padding: 1rem 1.5rem;
+        border-left: 4px solid #007bff;
+        background-color: #f8f9fa;
+        color: #6c757d;
+        font-style: italic;
+    }
+    
+    .article-content blockquote p:last-child {
+        margin-bottom: 0;
+    }
+    
+    .article-content code {
+        background-color: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        font-size: 0.9em;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    
+    .article-content pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 5px;
+        overflow-x: auto;
+        margin-bottom: 1.2rem;
+    }
+    
+    .article-content pre code {
+        background-color: transparent;
+        padding: 0;
+    }
+    
+    .article-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin: 1.5rem 0;
+    }
+    
+    .article-content table {
+        width: 100%;
+        margin-bottom: 1.2rem;
+        border-collapse: collapse;
+    }
+    
+    .article-content table th,
+    .article-content table td {
+        padding: 0.75rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    .article-content table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+    
+    .article-content hr {
+        margin: 2rem 0;
+        border: 0;
+        border-top: 1px solid #eee;
+    }
+    
+    /* 文章导航 */
+    .article-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #eee;
+    }
+    
+    .article-navigation a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .article-navigation a:hover {
+        text-decoration: underline;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+        .article-title {
+            font-size: 1.6rem;
+        }
+        
+        .article-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .article-navigation {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block left_content %}
+<div class="article-detail">
+    <!-- 文章头部信息 -->
+    <div class="article-header">
+        <h1 class="article-title">{{ article_title }}</h1>
+        
+        <div class="article-meta">
+            <div class="article-meta-item">
+                <i>📅</i>
+                <span>发布于 {{ article_created_at|date:"Y年m月d日" }}</span>
+            </div>
+            
+            {% if article_updated_at and article_updated_at != article_created_at %}
+            <div class="article-meta-item">
+                <i>✏️</i>
+                <span>更新于 {{ article_updated_at|date:"Y年m月d日" }}</span>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if article_tags %}
+        <div class="article-tags">
+            <i>🏷️</i>
+            {% for tag in article_tags %}
+            <a href="/tag/{{ tag.slug }}/" class="tag">{{ tag.name }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- 文章内容 -->
+    <div class="article-content">
+        <!-- 
+            注意：这里直接输出已经解析的HTML内容
+            在Django视图中，您应该已经使用markdown库将Markdown转换为HTML
+            例如：article.content_html = markdown.markdown(article.content)
+        -->
+        {% if article_content_html %}
+            {{ article_content_html }}
+        {% else %}
+            <!-- 如果未提供HTML内容，则显示原始内容（可能包含Markdown语法） -->
+            <p>{{ article_content|linebreaks }}</p>
+        {% endif %}
+    </div>
+    
+    <!-- 文章导航（上一页/下一页） -->
+    {% if previous_article or next_article %}
+    <div class="article-navigation">
+        <div class="prev-article">
+            {% if previous_article %}
+            <a href="/article/{{ previous_article.slug }}/">
+                <span>← 上一篇</span><br>
+                <strong>{{ previous_article.title|truncatechars:30 }}</strong>
+            </a>
+            {% endif %}
+        </div>
+        
+        <div class="next-article">
+            {% if next_article %}
+            <a href="/article/{{ next_article.slug }}/">
+                <span>下一篇 →</span><br>
+                <strong>{{ next_article.title|truncatechars:30 }}</strong>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 文章详情页特定的JavaScript代码
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. 为文章中的图片添加点击查看大图功能
+        const articleImages = document.querySelectorAll('.article-content img');
+        articleImages.forEach(img => {
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', function() {
+                // 创建模态框查看大图
+                const modal = document.createElement('div');
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100%';
+                modal.style.height = '100%';
+                modal.style.backgroundColor = 'rgba(0,0,0,0.8)';
+                modal.style.display = 'flex';
+                modal.style.justifyContent = 'center';
+                modal.style.alignItems = 'center';
+                modal.style.zIndex = '2000';
+                modal.style.cursor = 'zoom-out';
+                
+                const modalImg = document.createElement('img');
+                modalImg.src = this.src;
+                modalImg.style.maxWidth = '90%';
+                modalImg.style.maxHeight = '90%';
+                modalImg.style.borderRadius = '5px';
+                modalImg.style.boxShadow = '0 5px 25px rgba(0,0,0,0.5)';
+                
+                modal.appendChild(modalImg);
+                document.body.appendChild(modal);
+                
+                // 点击关闭模态框
+                modal.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+            });
+        });
+        
+        // 2. 为代码块添加复制按钮
+        const codeBlocks = document.querySelectorAll('.article-content pre');
+        codeBlocks.forEach(pre => {
+            // 检查是否已经添加了复制按钮
+            if (!pre.querySelector('.copy-code-btn')) {
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-code-btn';
+                copyBtn.textContent = '复制';
+                copyBtn.style.position = 'absolute';
+                copyBtn.style.top = '5px';
+                copyBtn.style.right = '5px';
+                copyBtn.style.background = '#007bff';
+                copyBtn.style.color = 'white';
+                copyBtn.style.border = 'none';
+                copyBtn.style.borderRadius = '3px';
+                copyBtn.style.padding = '3px 8px';
+                copyBtn.style.fontSize = '0.8rem';
+                copyBtn.style.cursor = 'pointer';
+                copyBtn.style.zIndex = '10';
+                
+                pre.style.position = 'relative';
+                pre.appendChild(copyBtn);
+                
+                copyBtn.addEventListener('click', function() {
+                    const code = pre.querySelector('code').innerText;
+                    navigator.clipboard.writeText(code).then(() => {
+                        const originalText = copyBtn.textContent;
+                        copyBtn.textContent = '已复制!';
+                        copyBtn.style.background = '#28a745';
+                        
+                        setTimeout(() => {
+                            copyBtn.textContent = originalText;
+                            copyBtn.style.background = '#007bff';
+                        }, 2000);
+                    });
+                });
+            }
+        });
+        
+        // 3. 为表格添加响应式包装
+        const tables = document.querySelectorAll('.article-content table');
+        tables.forEach(table => {
+            const wrapper = document.createElement('div');
+            wrapper.style.overflowX = 'auto';
+            wrapper.style.marginBottom = '1.2rem';
+            
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
+        });
+        
+        // 4. 自动为标题添加锚点链接（可选）
+        const headings = document.querySelectorAll('.article-content h2, .article-content h3, .article-content h4');
+        headings.forEach(heading => {
+            // 为标题添加id（基于文本内容生成）
+            const id = heading.textContent
+                .toLowerCase()
+                .replace(/[^\w\u4e00-\u9fa5]+/g, '-')
+                .replace(/^-|-$/g, '');
+            
+            heading.id = id;
+            
+            // 添加锚点链接图标
+            const anchor = document.createElement('a');
+            anchor.href = `#${id}`;
+            anchor.innerHTML = '🔗';
+            anchor.style.marginLeft = '10px';
+            anchor.style.textDecoration = 'none';
+            anchor.style.opacity = '0.5';
+            anchor.style.fontSize = '0.8em';
+            
+            anchor.addEventListener('mouseenter', function() {
+                this.style.opacity = '1';
+            });
+            
+            anchor.addEventListener('mouseleave', function() {
+                this.style.opacity = '0.5';
+            });
+            
+            heading.appendChild(anchor);
+        });
+    });
+</script>
+{% endblock %}

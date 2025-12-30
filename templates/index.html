@@ -1,0 +1,29 @@
+<!-- templates/index.html -->
+{% extends 'base.html' %}
+
+{% block title %}首页 - GJH的博客{% endblock %}
+
+{% block left_content %}
+<h1>最新文章</h1>
+
+{% for article in recent_articles %}
+<div class="article-card">
+    <h2 class="article-title">
+        <a href="/article/{{ article.slug }}/">{{ article.title }}</a>
+    </h2>
+    <div class="article-meta">
+        发布于 {{ article.pub_date|date:"Y-m-d" }}
+    </div>
+    <div class="article-excerpt">
+        {{ article.excerpt|truncatechars:200 }}
+    </div>
+    <div class="article-tags">
+        {% for tag in article.tags.all %}
+        <a href="/tag/{{ tag.slug }}/" class="tag">{{ tag.name }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% empty %}
+<p>暂无文章</p>
+{% endfor %}
+{% endblock %}
