@@ -1,0 +1,4 @@
+Django==6.0
+Markdown==3.10
+python-slugify==8.0.4
+pymdown-extensions==10.19.1
