@@ -35,13 +35,7 @@ def article_detail(request, slug):
                 'markdown.extensions.toc',
                 'pymdownx.tasklist',
                 'pymdownx.tilde',
-                'pymdownx.arithmatex',
-            ],
-            extension_configs={
-                'pymdownx.arithmatex': {
-                    'generic': True,  # 使用通用TeX语法
-                }
-            }
+            ]
         )
         article_content = ""
     else:
