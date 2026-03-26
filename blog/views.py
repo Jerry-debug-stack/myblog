@@ -7,6 +7,7 @@ from collections import defaultdict
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import markdown
 from django.utils.safestring import mark_safe
+import re
 
 # tags recent_article archives
 def get_normal():
@@ -18,6 +19,44 @@ def fault_view(request:HttpRequest,exception=None):
     tags,recent_articles = get_normal()
     return render(request,"404.html",{"tags":tags,"recent_articles":recent_articles})
 
+def protect_math(content):
+    """
+    将 content 中的 LaTeX 公式（$...$ 和 $$...$$）替换为临时占位符，
+    返回处理后的文本和占位符列表。
+    """
+    placeholders = []
+    
+    # 匹配行内公式 $...$（注意避免匹配到 $$...$$）
+    inline_pattern = r'(?<!\$)\$(?!\$)(.*?)(?<!\$)\$(?!\$)'
+    # 匹配块级公式 $$...$$（跨行）
+    #block_pattern = r'\$\$([\s\S]*?)\$\$'
+    block_pattern = re.compile(r'\$\$([\s\S]*?)\$\$', re.DOTALL)
+    
+    def replace(match, is_block=False):
+        # 存储原始公式内容，保留定界符
+        if is_block:
+            original = f'$${match.group(1)}$$'
+        else:
+            original = f'${match.group(1)}$'
+        placeholders.append(original)
+        return f'@@MATH_{len(placeholders)-1}@@'
+    
+    # 先处理块级公式（避免行内模式干扰）
+    content = re.sub(block_pattern, lambda m: replace(m, is_block=True), content)
+    # 再处理行内公式
+    content = re.sub(inline_pattern, lambda m: replace(m, is_block=False), content)
+    return content, placeholders
+
+def restore_math(html, placeholders):
+    """
+    将占位符替换回原始公式。
+    """
+    for i, original in enumerate(placeholders):
+        html = html.replace(f'@@MATH_{i}@@', original)
+        if original ==  '$$\r\nf(x;\\alpha,\\beta)=\\left\\{\r\n\\begin{array}{ll}\r\n\\frac{1}{\\beta-\\alpha}, & \\alpha<x<\\beta \\\\\r\n0, & \\text{other}\r\n\\end{array}\r\n\\right.\r\n$$':
+            print(html)
+    return html
+
 # article_title article_created_at article_updated_at article_tags
 # article_content_html article_content
 # previous_article next_article
@@ -27,8 +66,9 @@ def article_detail(request, slug):
     
     # 如果是Markdown内容，转换为HTML
     if article.is_markdown:
-        article_content_html = markdown.markdown(
-            article.content,
+        content = article.content
+        content, placeholders = protect_math(content)
+        md = markdown.Markdown(
             extensions=[
                 'markdown.extensions.extra',
                 'markdown.extensions.codehilite',
@@ -37,6 +77,9 @@ def article_detail(request, slug):
                 'pymdownx.tilde',
             ]
         )
+        html = md.convert(content)
+        article_content_html = restore_math(html,placeholders)
+        print(placeholders)
         article_content = ""
     else:
         article_content_html = ""

@@ -231,7 +231,7 @@
             例如：article.content_html = markdown.markdown(article.content)
         -->
         {% if article_content_html %}
-            {{ article_content_html }}
+            {{ article_content_html|safe }}
         {% else %}
             <!-- 如果未提供HTML内容，则显示原始内容（可能包含Markdown语法） -->
             <p>{{ article_content|linebreaks }}</p>

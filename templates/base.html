@@ -359,7 +359,6 @@
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
                 displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                packages: {'[+]': ['ams']},
                 tags: 'ams',  // 使用 AMS 编号
                 multlineWidth: '85%',  // 多行公式宽度
                 useLabelIds: true
@@ -369,9 +368,6 @@
                 ignoreHtmlClass: 'tex2jax_ignore',
                 processHtmlClass: 'tex2jax_process'
             },
-            loader: {
-                load: ['[tex]/ams']
-            }
         };
         // 移动端菜单切换
         document.addEventListener('DOMContentLoaded', function() {
@@ -426,7 +422,7 @@
             setActiveNavLink();
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
